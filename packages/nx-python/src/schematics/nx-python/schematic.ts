@@ -8,14 +8,12 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import {
-  addProjectToNxJsonInTree,
-  names,
-  offsetFromRoot,
+  // addProjectToNxJsonInTree,
   projectRootDir,
   ProjectType,
-  toFileName,
   updateWorkspace,
 } from '@nrwl/workspace';
+import { names, offsetFromRoot } from '@nrwl/devkit';
 import { NxPythonSchematicSchema, NxPythonTemplate } from './schema';
 
 import { join } from 'path';
@@ -40,10 +38,10 @@ interface NormalizedSchema extends NxPythonSchematicSchema {
 }
 
 function normalizeOptions(options: NxPythonSchematicSchema): NormalizedSchema {
-  const name = toFileName(options.name);
+  const name = names(options.name);
   const projectDirectory = options.directory
-    ? `${toFileName(options.directory)}/${name}`
-    : name;
+    ? `${names(options.directory).name}/${name}`
+    : name.fileName;
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
   const projectRoot = `${projectRootDir(projectType)}/${projectDirectory}`;
   const parsedTags = options.tags
@@ -123,9 +121,11 @@ export default function (options: NxPythonSchematicSchema): Rule {
         options: getLintOptions(normalizedOptions.template, project),
       });
     }),
+    /*
     addProjectToNxJsonInTree(normalizedOptions.projectName, {
       tags: normalizedOptions.parsedTags,
     }),
+    */
     addFiles(normalizedOptions),
   ]);
 }
